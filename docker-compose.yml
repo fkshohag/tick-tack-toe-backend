@@ -1,0 +1,42 @@
+version: "3.5"
+services:
+  backend:
+    container_name: backend_app
+    working_dir: /var/www/ticktacbackend
+    build:
+      context: .
+    volumes:
+      - .:/var/www/ticktacbackend
+      - /var/www/ticktacbackend/node_modules
+    ports:
+      - 2108:3001
+    networks:
+      - ticktacnet
+    depends_on:
+      - db
+
+  db:
+    image: postgres:11.5-alpine
+    container_name: backend_postgres
+    networks:
+      - ticktacnet
+    volumes:
+      - /home/shohag/Workspace/Deploy/db_store/ticktacdb:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=ticktac
+      - POSTGRES_PASSWORD=ticktac
+      - POSTGRES_DB=ticktac
+
+  db_client:
+    image: adminer
+    container_name: backend_app_adminer
+    ports:
+      - 2109:8080
+    depends_on:
+      - db
+    networks:
+      - ticktacnet
+
+networks:
+  ticktacnet:
+    driver: bridge
